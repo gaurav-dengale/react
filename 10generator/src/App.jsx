@@ -67,9 +67,9 @@ return (
           />
           <label htmlFor="character" className="text-gray-700">Include Special Characters</label>
         </div>
-        <div className="mb-6 ">
-          <label className="block text-gray-700 font-medium mb-2">Generated Password</label>
-          <div className='flex items-center'>
+        <div className="mb-6 flex justify-center ite  ">
+          <label className="  text-gray-700 font-medium mb-2">Generated Password</label>
+          <div className=' flex block items-center'>
           <input
             type="text"
             value={password}
