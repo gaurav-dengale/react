@@ -18,11 +18,9 @@ function App() {
     setAmount(convertedAmount);
   };
   
-  const convert = () => {
-    if (currencyInfo[to]) {
-      setConvertedAmount(amount * currencyInfo[to]);
-    }
-  };
+ const convert = () => {
+     setConvertedAmount ( (amount * currencyInfo[to]).toFixed (4) )
+     } ;
 
   return (
     <div
