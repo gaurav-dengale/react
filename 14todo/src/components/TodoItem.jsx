@@ -1,61 +1,76 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useTodoContext } from '../context/TodoContext';
 
-function TodoItem({ todo }) {
+// We receive the full object here
+function TodoItem({ todoObject }) {
     const [isTodoEditable, setIsTodoEditable] = React.useState(false);
-    const [todoMsg, setTodoMsg] = React.useState(todo.todo);
-    const {updateTodo, removeTodo, toggleTodo} = useTodoContext();
+    
+    // CHANGED: We are looking for 'todoMsg', not 'todo'
+    const [todoMsg, setTodoMsg] = React.useState(todoObject.todoMsg);
+    
+    const { updateTodo, removeTodo, toggleTodo } = useTodoContext();
+    const editInputRef = useRef(null);
 
     const editTodo = () => {
-        updateTodo(todo.id, {...todo,todo: todoMsg });
+        // Send the updated message text
+        updateTodo(todoObject.id, { todoMsg: todoMsg }); 
         setIsTodoEditable(false);
     } 
-    const handleToggleTodo = () => {    
-        toggleTodo(todo.id);
+    
+    const handleToggleTodo = () => {
+        toggleTodo(todoObject.id);
     }
 
-
-    
+    useEffect(() => {
+        if (isTodoEditable && editInputRef.current) {
+            setTimeout(() => {
+                editInputRef.current.focus();
+                const length = editInputRef.current.value.length;
+                editInputRef.current.setSelectionRange(length, length); 
+            }, 0); 
+        }
+    }, [isTodoEditable]);
 
     return (
         <div
             className={`flex border border-black/10 rounded-lg px-3 py-1.5 gap-x-3 shadow-sm shadow-white/50 duration-300  text-black ${
-                todo.completed ? "bg-[#c6e9a7]" : "bg-[#ccbed7]"
+                todoObject.completed ? "bg-[#c6e9a7]" : "bg-[#ccbed7]"
             }`}
         >
             <input
                 type="checkbox"
                 className="cursor-pointer"
-                checked={todo.completed}
-                onChange={() => handleToggleTodo(todo.id)}
+                checked={todoObject.completed}
+                onChange={handleToggleTodo}
             />
             <input
+                ref={editInputRef}
                 type="text"
                 className={`border outline-none w-full bg-transparent rounded-lg ${
                     isTodoEditable ? "border-black/10 px-2" : "border-transparent"
-                } ${todo.completed ? "line-through" : ""}`}
+                } ${todoObject.completed ? "line-through" : ""}`}
+                
+                // Binding to our local text state
                 value={todoMsg}
                 onChange={(e) => setTodoMsg(e.target.value)}
                 readOnly={!isTodoEditable}
             />
-            {/* Edit, Save Button */}
             <button
                 className="inline-flex w-8 h-8 rounded-lg text-sm border border-black/10 justify-center items-center bg-gray-50 hover:bg-gray-100 shrink-0 disabled:opacity-50"
                 onClick={() => {
-                    if (todo.completed) return;
+                    if (todoObject.completed) return;
 
                     if (isTodoEditable) {
                         editTodo();
                     } else setIsTodoEditable((prev) => !prev);
                 }}
-                disabled={todo.completed}
+                disabled={todoObject.completed}
             >
                 {isTodoEditable ? "📁" : "✏️"}
             </button>
-            {/* Delete Todo Button */}
             <button
                 className="inline-flex w-8 h-8 rounded-lg text-sm border border-black/10 justify-center items-center bg-gray-50 hover:bg-gray-100 shrink-0"
-                onClick={() => removeTodo(todo.id)}
+                onClick={() => removeTodo(todoObject.id)}
             >
                 ❌
             </button>
